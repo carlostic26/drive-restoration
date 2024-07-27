@@ -23,15 +23,28 @@ class OptionTileWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: Row(
           children: [
-            const SizedBox(width: 8),
-            Text(
-              text,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Text(
+                  text,
+                  style: TextStyle(fontSize: 14),
+                  overflow: TextOverflow.visible,
+                ),
+              ),
             ),
-            const Spacer(),
-            Radio<bool>(
-              value: true,
-              groupValue: isSelected,
-              onChanged: onSelected,
+            //Spacer(),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                //const SizedBox(width: 8),
+
+                Radio<bool>(
+                  value: true,
+                  groupValue: isSelected,
+                  onChanged: onSelected,
+                ),
+              ],
             ),
           ],
         ),
