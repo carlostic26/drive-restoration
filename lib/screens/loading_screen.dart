@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/screens/home_screen.dart';
-import 'package:recu_drive/screens/widgets/logo_section.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({super.key});
