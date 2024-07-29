@@ -17,6 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 0;
   bool finishPage = false;
 
+  String prompt = '';
+
   AnswerPage answerPage = AnswerPage('', '');
 
   String fileType = '';
@@ -180,6 +182,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               answerPage = AnswerPage(fileType, timeDeleted);
 
+                              prompt =
+                                  'Como usuario de Google Drive requiero la restauración de mis archivos tipo $fileType, ' +
+                                      'que eliminé por accidente $timeDeleted';
+
                               //TODO: Al finalizar la ultima pagina, el objeto answerPage se debe enviar al meotodd
                               // que armará el promt y se debe mostrar dicho prompt (String) en pantalla..
 
@@ -207,6 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
         currentPage: _currentPage,
         pageController: _pageController,
         contentPages: contentPages,
+        promt: prompt,
       ),
     );
   }

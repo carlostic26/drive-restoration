@@ -7,13 +7,15 @@ class NavBarHomeSection extends StatelessWidget {
   bool finishPage;
   int currentPage;
   List<ContentPage> contentPages;
+  String promt;
 
   NavBarHomeSection(
       {super.key,
       required this.finishPage,
       required this.currentPage,
       required this.pageController,
-      required this.contentPages});
+      required this.contentPages,
+      required this.promt});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,9 @@ class NavBarHomeSection extends StatelessWidget {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => const FinishScreen()));
+                            builder: (_) => FinishScreen(
+                                  prompt: promt,
+                                )));
                   } else {
                     _goToNextPage();
                   }
