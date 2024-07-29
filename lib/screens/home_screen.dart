@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_page.dart';
+import 'package:recu_drive/screens/finish_screen.dart';
+import 'package:recu_drive/screens/widgets/nav_bar_home_section.dart';
 import 'package:recu_drive/screens/widgets/option_tile_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
   int _currentPage = 0;
+  bool finishPage = false;
 
   AnswerPage answerPage = AnswerPage('', '');
 
@@ -80,163 +83,131 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 171, 60),
+        backgroundColor: const Color.fromARGB(255, 1, 171, 60),
         title: const Text(
           'Formulario de recuperación',
           style: TextStyle(color: Colors.white, fontSize: 16),
         ),
         centerTitle: true,
       ),
-      body: PageView.builder(
-        controller: _pageController,
-        itemCount: contentPages.length,
-        onPageChanged: (int page) {
-          setState(() {
-            _currentPage = page;
-          });
-        },
-        itemBuilder: (context, index) {
-          final contentPage = contentPages[index];
-          return SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                //TODO: Progres section
-
-                const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(left: 15, top: 10),
-                      child: SizedBox(
-                          width: 200, height: 20, child: Placeholder()),
-                    )),
-
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(15, 15, 100, 40),
-                  child: Text(
-                    contentPage.title,
-                    style: const TextStyle(
-                        fontSize: 25, fontWeight: FontWeight.bold),
+      body: Column(
+        children: [
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15, top: 20),
+                child: SizedBox(
+                  width: 200,
+                  height: 5,
+                  child: Row(
+                    children: List.generate(
+                      contentPages.length,
+                      (i) => Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          decoration: BoxDecoration(
+                            color: i <= _currentPage
+                                ? Colors
+                                    .black54 // Color para páginas completadas
+                                : Colors.grey, // Color para páginas pendientes
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                for (var option in contentPage.optionTile)
-                  OptionTileWidget(
-                    text: option[0],
-                    isSelected: option[1],
-                    onSelected: (value) {
-                      setState(() {
-                        // Desmarca todos los demás RadioButton
-                        for (var otherOption in contentPage.optionTile) {
-                          otherOption[1] = false;
-                        }
-                        option[1] = value; // Actualiza el estado del botón
+              )),
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: contentPages.length,
+              onPageChanged: (int page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
+              itemBuilder: (context, index) {
+                final contentPage = contentPages[index];
+                return SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      //TODO: Progres section
 
-                        //GUARDAR CAPTURAR LA INFO DEL RADIOBUTTON CORRESPONDIENTE (LO QUE SE GUARDA ES EL TEXTO)
-                        //en la pag 1 es decir en la segunda page (0,1,2,3) se debe guardar la info de option[0]
-                        // ej: pag actual es 1, entonces fileType =  option[0];
-                        // ej: pag actiual es 4, entonces timeDeleted = option[0]
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(15, 15, 100, 40),
+                        child: Text(
+                          contentPage.title,
+                          style: const TextStyle(
+                              fontSize: 25, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      for (var option in contentPage.optionTile)
+                        OptionTileWidget(
+                          text: option[0],
+                          isSelected: option[1],
+                          onSelected: (value) {
+                            setState(() {
+                              // Desmarca todos los demás RadioButton
+                              for (var otherOption in contentPage.optionTile) {
+                                otherOption[1] = false;
+                              }
+                              option[1] =
+                                  value; // Actualiza el estado del botón
 
-                        if (_currentPage == 1) {
-                          fileType = option[0];
-                          print(
-                              'actualPage: $_currentPage FileType Selected: $fileType');
-                        } else if (_currentPage == 4) {
-                          timeDeleted = option[0];
-                          print(
-                              'actualPage: $_currentPage TimeDeleted Selected: $timeDeleted');
-                        }
+                              //guarda la info sobre tipo de archivo
+                              if (_currentPage == 1) {
+                                fileType = option[0];
+                                print(
+                                    'actualPage: $_currentPage FileType Selected: $fileType');
 
-                        /*  print('FileType Selected: $fileType');
-                        print('TimeDeleted Selected: $timeDeleted'); */
+                                //guarda la info de tiempo de borrado y habilita el boton de finalizar
+                              } else if (_currentPage == 4) {
+                                timeDeleted = option[0];
+                                print(
+                                    'actualPage: $_currentPage TimeDeleted Selected: $timeDeleted');
 
-                        answerPage = AnswerPage(fileType, timeDeleted);
+                                finishPage = true;
+                              }
 
-                        //TODO: Al finalizar la ultima pagina, el objeto answerPage se debe enviar al meotodd
-                        // que armará el promt y se debe mostrar dicho prompt (String) en pantalla
+                              if (_currentPage != 4) {
+                                finishPage = false;
+                              }
 
-                        // La la pantalla final debe titularse: Solicitar recuperación
-                        // en el body debe tener un icono de google drive
-                        // debajo, el prompt
-                        // debajo el boton recuperar mis archivos
-                        // al tocarlo se muestra pantalla con 2 op: dentro de la app, fuera de la app
-                        // si es dentro de la app, se mostrara webview, sino un launcher
-                        // debajo se debe copiar el texto del promt porque el user lo va a usar
-                        // fin de la app
-                      });
-                    },
-                  )
-              ],
+                              /*  print('FileType Selected: $fileType');
+                              print('TimeDeleted Selected: $timeDeleted'); */
+
+                              answerPage = AnswerPage(fileType, timeDeleted);
+
+                              //TODO: Al finalizar la ultima pagina, el objeto answerPage se debe enviar al meotodd
+                              // que armará el promt y se debe mostrar dicho prompt (String) en pantalla..
+
+                              // La la pantalla final debe titularse: Solicitar recuperación
+                              // en el body debe tener un icono de google drive
+                              // debajo, el prompt
+                              // debajo el boton recuperar mis archivos
+                              // al tocarlo se muestra pantalla con 2 op: dentro de la app, fuera de la app
+                              // si es dentro de la app, se mostrara webview, sino un launcher
+                              // debajo se debe copiar el texto del promt porque el user lo va a usar
+                              // fin de la app
+                            });
+                          },
+                        )
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
-      bottomNavigationBar: Container(
-        height: 120,
-        color: const Color.fromARGB(255, 226, 226, 226),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(15, 15, 7.5, 15),
-                child: TextButton(
-                  onPressed: () {
-                    _goToPreviousPage();
-                  },
-                  style: TextButton.styleFrom(
-                    shadowColor: Colors.black,
-                    elevation: 5,
-                    minimumSize: const Size(0, 50),
-                    backgroundColor: const Color(
-                        0xFFF5F5F5), // Un blanco ligeramente atenuado
-                    foregroundColor: Colors.black87, // Color del texto
-                  ),
-                  child: const Text(
-                    'VOLVER',
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(7.5, 15, 15, 15),
-                child: TextButton(
-                  onPressed: () {
-                    _goToNextPage();
-                  },
-                  style: TextButton.styleFrom(
-                    shadowColor: Colors.black,
-                    elevation: 5,
-                    minimumSize: const Size(0, 50),
-                    backgroundColor: Color.fromARGB(
-                        255, 0, 130, 30), // Un negro ligeramente suavizado
-                    foregroundColor: Colors.white70, // Color del texto
-                  ),
-                  child: const Text('SIGUIENTE'),
-                ),
-              ),
-            )
-          ],
-        ),
+      bottomNavigationBar: NavBarHomeSection(
+        finishPage: finishPage,
+        currentPage: _currentPage,
+        pageController: _pageController,
+        contentPages: contentPages,
       ),
     );
-  }
-
-  void _goToPreviousPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _goToNextPage() {
-    if (_currentPage < contentPages.length - 1) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
   }
 }

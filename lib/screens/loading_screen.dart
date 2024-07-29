@@ -19,7 +19,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             children: [
               //LOGO
               SizedBox(
-                  height: 150, width: 150, child: Image.asset('assets/dash.png')
+                  height: 150, width: 150, child: Image.asset('assets/icon.png')
                   //Placeholder()
                   ),
 
@@ -27,7 +27,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
               const Padding(
                 padding: EdgeInsets.fromLTRB(70, 5, 70, 5),
                 child: LinearProgressIndicator(
-                  color: Colors.green,
+                  color: Colors.blue,
                   minHeight: 5.0,
                 ),
               ),
