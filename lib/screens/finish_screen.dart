@@ -1,4 +1,7 @@
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FinishScreen extends StatelessWidget {
   String prompt;
@@ -6,6 +9,8 @@ class FinishScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String urlForm = ''; //todo: Pegar el link del formulario
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
       appBar: AppBar(
@@ -31,28 +36,28 @@ class FinishScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.fromLTRB(10, 1, 5, 5),
             child: Text(
-              'Copialo y pegalo en el apartado de "Información adicional útil"',
+              '⚠️ Copialo y pegalo en el apartado de "Información adicional útil"',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
               ),
             ),
           ),
           //Spacer(),
 
           const SizedBox(
-            height: 50,
+            height: 30,
           ),
 
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: Column(children: [
               Container(
-                color: Colors.grey,
+                color: const Color.fromARGB(255, 123, 123, 123),
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: IconButton(
                     onPressed: () {
-                      // TODO: hacer que el copy funcione
+                      copiarPrompt(context, prompt);
                     },
                     icon: const Icon(
                       Icons.content_copy,
@@ -76,7 +81,11 @@ class FinishScreen extends StatelessWidget {
           //TEXT PROMT - con iconButton de copiar
 
           //BOTTON: PROCEDER
-          const Spacer(),
+          //const Spacer(),
+
+          SizedBox(
+            height: 15,
+          ),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -88,11 +97,11 @@ class FinishScreen extends StatelessWidget {
                       shadowColor: Colors.black,
                       elevation: 5,
                       minimumSize: const Size(0, 50),
-                      backgroundColor: Colors.grey,
+                      backgroundColor: Color.fromARGB(255, 123, 123, 123),
                       foregroundColor: Colors.black87, // Color del texto
                     ),
                     onPressed: () {
-                      // TODO: hacer que el copy funcione
+                      copiarPrompt(context, prompt);
                     },
                     child: const Text(
                       'Copiar promt',
@@ -113,7 +122,7 @@ class FinishScreen extends StatelessWidget {
                       foregroundColor: Colors.black87, // Color del texto
                     ),
                     onPressed: () {
-                      //Abrir pantalla de dentro o fiuera de la app, no se debe ir si no esta copiado el promyt
+                      launchURL(urlForm);
                     },
                     child: const Text(
                       'Ir al formulario',
@@ -126,5 +135,23 @@ class FinishScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const SizedBox(height: 80, child: Placeholder()),
     );
+  }
+
+  void copiarPrompt(BuildContext context, String prompt) {
+    FlutterClipboard.copy(prompt).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Copiado al portapapeles'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    });
+  }
+
+  Future<void> launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      throw Exception('No se pudo abrir $url');
+    }
   }
 }

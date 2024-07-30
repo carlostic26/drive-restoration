@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:recu_drive/screens/home_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
@@ -9,6 +10,8 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  bool buttonEnabled = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,12 +27,26 @@ class _LoadingScreenState extends State<LoadingScreen> {
                   ),
 
               //LINEAR PROGRESS BAR
-              const Padding(
+              Padding(
                 padding: EdgeInsets.fromLTRB(70, 5, 70, 5),
-                child: LinearProgressIndicator(
+                child: LinearPercentIndicator(
+                    //width: width * 0.55,
+                    lineHeight: 5,
+                    percent: 100 / 100,
+                    animation: true,
+                    animationDuration: 1000, // 8.5 sec para cargar la barra
+                    progressColor: Colors.blue,
+                    onAnimationEnd: () {
+                      setState(() {
+                        buttonEnabled = true;
+                      });
+                    }),
+
+                /* LinearProgressIndicator(
+                 
                   color: Colors.blue,
                   minHeight: 5.0,
-                ),
+                ), */
               ),
 
               //TEXT
@@ -41,14 +58,21 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
               //BTN CONTINUE
               ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
+                  style: buttonEnabled
+                      ? ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        )
+                      : ElevatedButton.styleFrom(
+                          disabledBackgroundColor: Colors.grey[300],
+                          disabledForegroundColor: Colors.grey[600],
+                        ),
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HomeScreen()),
-                    );
+                    if (buttonEnabled) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      );
+                    }
                   },
                   child: const Text(
                     'Continuar',

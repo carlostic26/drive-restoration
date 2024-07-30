@@ -40,10 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ContentPage('Elije tu tipo de cuenta de Google Drive', [
       ['👤    Personal', false],
       ['🏫    Intitucional', false],
-      [
-        '❓    No lo sé',
-        false
-      ] //Si tu cuenta no termina en gmail.com entonces es institucional.
+      ['❓    No lo sé', false]
     ]),
     ContentPage('Elige el tipo de archivo eliminado', [
       ['⏯️    Video (mp4, mkv, 3gp, mov, h264, h265, otro...)', false],
@@ -124,6 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: PageView.builder(
               controller: _pageController,
               itemCount: contentPages.length,
+              physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (int page) {
                 setState(() {
                   _currentPage = page;
@@ -155,8 +153,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               for (var otherOption in contentPage.optionTile) {
                                 otherOption[1] = false;
                               }
-                              option[1] =
-                                  value; // Actualiza el estado del botón
+
+                              option[1] = value;
+
+                              if (_currentPage == 0 &&
+                                  option[0] == '❓    No lo sé') {
+                                _helpDialogTypeAccount(context);
+                                option[1] = false;
+                              }
 
                               //guarda la info sobre tipo de archivo
                               if (_currentPage == 1) {
@@ -216,5 +220,50 @@ class _HomeScreenState extends State<HomeScreen> {
         promt: prompt,
       ),
     );
+  }
+
+  void _helpDialogTypeAccount(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+              title: const Center(
+                child: Text(
+                  "Conoce tu tipo de cuenta",
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              children: <Widget>[
+                Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
+                      child: Text(
+                          textAlign: TextAlign.center,
+                          'Si tu cuenta no termina en "@gmail.com" entonces es institucional.'),
+                    ),
+                    Container(
+                      alignment: Alignment.topCenter,
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all<Color>(Colors.green),
+                          ),
+                          child: const Text(
+                            'Entiendo',
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                          onPressed: () => {
+                                Navigator.pop(context),
+                              }),
+                    ),
+                  ],
+                ),
+              ]);
+        });
   }
 }
