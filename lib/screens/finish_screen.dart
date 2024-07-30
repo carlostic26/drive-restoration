@@ -9,7 +9,8 @@ class FinishScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String urlForm = ''; //todo: Pegar el link del formulario
+    String urlForm =
+        'https://support.google.com/drive/answer/1716222?hl=en&co=GENIE.Platform%3DDesktop&sjid=10827554286653290509-NA'; //todo: Hacer gifs en cada page o pantalla si es necesario
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
