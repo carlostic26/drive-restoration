@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
-import 'package:recu_drive/domain/entities/content_page.dart';
+import 'package:recu_drive/domain/entities/content_form_page.dart';
 import 'package:recu_drive/screens/finish_screen.dart';
 import 'package:recu_drive/screens/widgets/nav_bar_home_section.dart';
 import 'package:recu_drive/screens/widgets/option_tile_widget.dart';
@@ -36,13 +36,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<ContentPage> contentPages = [
-    ContentPage('Elije tu tipo de cuenta de Google Drive', [
+  List<ContentFormPage> contentFormPages = [
+    ContentFormPage('Elije tu tipo de cuenta de Google Drive', [
       ['👤    Personal', false],
       ['🏫    Intitucional', false],
       ['❓    No lo sé', false]
     ]),
-    ContentPage('Elige el tipo de archivo eliminado', [
+    ContentFormPage('Elige el tipo de archivo eliminado', [
       ['⏯️    Video (mp4, mkv, 3gp, mov, h264, h265, otro...)', false],
       ['🖼️    Imagen (png, jpg, jpeg, gif, webp, webm, otro...)', false],
       ['🎵    Audio (mp3, m4a, flac, wav, ogg, aac, otro...)', false],
@@ -51,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ['🧩    Otro (psd, veg, prpro, html, otro...)', false],
       ['❓    No lo sé', false],
     ]),
-    ContentPage('Elige tu región habitual', [
+    ContentFormPage('Elige tu región habitual', [
       ['🌎    Norteamérica', false],
       ['🌎    Centroamérica', false],
       ['🌎    Sudamérica', false],
@@ -60,13 +60,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ['🌍    Africa', false],
       ['🧩    Otro', false],
     ]),
-    ContentPage('Elige el idioma que usas en Google Drive', [
+    ContentFormPage('Elige el idioma que usas en Google Drive', [
       //Las solicitudes de recuperacion de archivos se hace unicamente en inglés.
       ['🇪🇸     Español', false],
       ['🇬🇧     Inglés', false],
       ['🧩    Otro', false],
     ]),
-    ContentPage('Elige el tiempo de borrado', [
+    ContentFormPage('Elige el tiempo de borrado', [
       //¿Hace cuanto tiempo borraste los archivos? || Dialog si marca mas de 25: Advertencia: Es probable que Google no pueda recuperar la información debido al largo tiempo de borrado de los archivos. Pero puedes intentar continuar con el proceso de recuperación de todos modos.
 
       ['📆   Hace menos de 25 dias', false],
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 5,
                   child: Row(
                     children: List.generate(
-                      contentPages.length,
+                      contentFormPages.length,
                       (i) => Expanded(
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -120,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              itemCount: contentPages.length,
+              itemCount: contentFormPages.length,
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (int page) {
                 setState(() {
@@ -128,12 +128,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               itemBuilder: (context, index) {
-                final contentPage = contentPages[index];
+                final contentPage = contentFormPages[index];
                 return SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Column(
                     children: [
-                      //TODO: Progres section
+
 
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 15, 100, 40),
@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
         finishPage: finishPage,
         currentPage: _currentPage,
         pageController: _pageController,
-        contentPages: contentPages,
+        contentPages: contentFormPages,
         promt: prompt,
       ),
     );

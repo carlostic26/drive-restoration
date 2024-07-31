@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:recu_drive/domain/entities/content_page.dart';
-import 'package:recu_drive/screens/finish_screen.dart';
+import 'package:recu_drive/domain/entities/content_form_page.dart';
+
+import '../finish_screen_pages.dart';
 
 class NavBarHomeSection extends StatelessWidget {
   late PageController pageController;
   bool finishPage;
   int currentPage;
-  List<ContentPage> contentPages;
+  List<ContentFormPage> contentPages;
   String promt;
 
   NavBarHomeSection(
@@ -55,7 +56,7 @@ class NavBarHomeSection extends StatelessWidget {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (_) => FinishScreen(
+                            builder: (_) => FinishScreenPages(
                                   prompt: promt,
                                 )));
                   } else {

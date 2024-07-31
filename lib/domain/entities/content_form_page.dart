@@ -1,7 +1,7 @@
-class ContentPage {
+class ContentFormPage {
   //final String emoji;
   final String title;
   final List<dynamic> optionTile; //emoti - text - radiobutton
 
-  ContentPage(this.title, this.optionTile);
+  ContentFormPage(this.title, this.optionTile);
 }

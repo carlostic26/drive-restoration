@@ -1,7 +1,7 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 class FinishScreen extends StatelessWidget {
   String prompt;
@@ -93,42 +93,50 @@ class FinishScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: TextButton(
-                    style: TextButton.styleFrom(
+                child:
+
+
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
                       shadowColor: Colors.black,
                       elevation: 5,
                       minimumSize: const Size(0, 50),
                       backgroundColor: Color.fromARGB(255, 123, 123, 123),
-                      foregroundColor: Colors.black87, // Color del texto
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: () {
                       copiarPrompt(context, prompt);
                     },
-                    child: const Text(
-                      'Copiar promt',
+                    icon: const Icon(Icons.copy_all, color: Colors.white),
+                    label: const Text(
+                      'Copiar texto',
                       style: TextStyle(color: Colors.white),
-                    )),
+                    ),
+                  )
+
               ),
               const SizedBox(
                 width: 20,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: TextButton(
-                    style: TextButton.styleFrom(
-                      shadowColor: Colors.black,
-                      elevation: 5,
-                      minimumSize: const Size(0, 50),
-                      backgroundColor: const Color.fromARGB(255, 1, 171, 60),
-                      foregroundColor: Colors.black87, // Color del texto
-                    ),
-                    onPressed: () {
-                      launchURL(urlForm);
-                    },
-                    child: const Text(
-                      'Ir al formulario',
-                      style: TextStyle(color: Colors.white),
-                    )),
+                child:ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    shadowColor: Colors.black,
+                    elevation: 5,
+                    minimumSize: const Size(0, 50),
+                    backgroundColor: const Color.fromARGB(255, 1, 171, 60),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    launchURL(urlForm);
+                  },
+                  icon: const Icon(Icons.language, color: Colors.white),
+                  label: const Text(
+                    'Ir al formulario',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
               ),
             ],
           )
@@ -155,4 +163,6 @@ class FinishScreen extends StatelessWidget {
       throw Exception('No se pudo abrir $url');
     }
   }
+
+
 }
