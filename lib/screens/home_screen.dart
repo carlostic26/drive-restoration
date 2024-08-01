@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
 import 'package:recu_drive/screens/finish_screen.dart';
-import 'package:recu_drive/screens/widgets/nav_bar_home_section.dart';
+import 'package:recu_drive/screens/widgets/nav_bar_home_windget.dart';
 import 'package:recu_drive/screens/widgets/option_tile_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,11 +15,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late PageController _pageController;
   int _currentPage = 0;
-  bool finishPage = false;
+  bool _finishPage = false;
 
-  String prompt = '';
+  bool _canNext = false;
 
-  AnswerPage answerPage = AnswerPage('', '');
+  String _prompt = '';
+
+  AnswerPage _answerPage = AnswerPage('', '');
 
   String fileType = '';
   String timeDeleted = '';
@@ -36,45 +38,45 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<ContentFormPage> contentFormPages = [
-    ContentFormPage('Elije tu tipo de cuenta de Google Drive', [
-      ['👤    Personal', false],
-      ['🏫    Intitucional', false],
-      ['❓    No lo sé', false]
+  final List<ContentFormPage> _contentFormPages = [
+    ContentFormPage('', 'Elije tu tipo de cuenta de Google Drive', [
+      ['👤', 'Personal', false],
+      ['🏫', 'Intitucional', false],
+      ['❓', 'No lo sé', false]
     ]),
-    ContentFormPage('Elige el tipo de archivo eliminado', [
-      ['⏯️    Video (mp4, mkv, 3gp, mov, h264, h265, otro...)', false],
-      ['🖼️    Imagen (png, jpg, jpeg, gif, webp, webm, otro...)', false],
-      ['🎵    Audio (mp3, m4a, flac, wav, ogg, aac, otro...)', false],
-      ['📄    Documentos (pdf, doc, pptx, txt, xlsx, otro... )', false],
-      ['📚    Comprimido (zip, rar, tar, 7z)', false],
-      ['🧩    Otro (psd, veg, prpro, html, otro...)', false],
-      ['❓    No lo sé', false],
+    ContentFormPage('', 'Elige el tipo de archivo eliminado', [
+      ['⏯️', 'Video (mp4, mkv, 3gp, mov, h264, h265, otro...)', false],
+      ['🖼️', 'Imagen (png, jpg, jpeg, gif, webp, webm, otro...)', false],
+      ['🎵', 'Audio (mp3, m4a, flac, wav, ogg, aac, otro...)', false],
+      ['📄', 'Documentos (pdf, doc, pptx, txt, xlsx, otro... )', false],
+      ['📚', 'Comprimido (zip, rar, tar, 7z)', false],
+      ['🧩', 'Otro (psd, veg, prpro, html, otro...)', false],
+      ['❓ ', 'Varios', false],
     ]),
-    ContentFormPage('Elige tu región habitual', [
-      ['🌎    Norteamérica', false],
-      ['🌎    Centroamérica', false],
-      ['🌎    Sudamérica', false],
-      ['🌍    Europa', false],
-      ['🌏    Asia', false],
-      ['🌍    Africa', false],
-      ['🧩    Otro', false],
+    ContentFormPage('', 'Elige tu región habitual', [
+      ['🌎', 'Norteamérica', false],
+      ['🌎', 'Centroamérica', false],
+      ['🌎', 'Sudamérica', false],
+      ['🌍', 'Europa', false],
+      ['🌏', 'Asia', false],
+      ['🌍', 'Africa', false],
+      ['🧩', 'Otro', false],
     ]),
-    ContentFormPage('Elige el idioma que usas en Google Drive', [
+    ContentFormPage('', 'Elige el idioma que usas en Google Drive', [
       //Las solicitudes de recuperacion de archivos se hace unicamente en inglés.
-      ['🇪🇸     Español', false],
-      ['🇬🇧     Inglés', false],
-      ['🧩    Otro', false],
+      ['🇪🇸', 'Español', false],
+      ['🇬🇧', 'Inglés', false],
+      ['🧩', 'Otro', false],
     ]),
-    ContentFormPage('Elige el tiempo de borrado', [
+    ContentFormPage('', 'Elige el tiempo de borrado', [
       //¿Hace cuanto tiempo borraste los archivos? || Dialog si marca mas de 25: Advertencia: Es probable que Google no pueda recuperar la información debido al largo tiempo de borrado de los archivos. Pero puedes intentar continuar con el proceso de recuperación de todos modos.
 
-      ['📆   Hace menos de 25 dias', false],
-      ['📅   Hace más de 25', false],
+      ['📆', 'Hace menos de 25 días', false],
+      ['📅', 'Hace más de 25 días', false],
     ]),
 
     //AVISO: El tiempo de recuperación de tus archivos puede tardar entre 5 horas y 3 dias. Google te enviará un correo informandote la decisión.
-    //ato curioso: El 99% de los usuarios ha logrado recuperar exitosamente sus archivos eliminados de Google Drive siempre y cuando lo soliciten en un plazo menor a 25 días desde su eliminación.
+    //ato curioso:
   ];
 
   @override
@@ -100,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 5,
                   child: Row(
                     children: List.generate(
-                      contentFormPages.length,
+                      _contentFormPages.length,
                       (i) => Expanded(
                         child: Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -120,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: PageView.builder(
               controller: _pageController,
-              itemCount: contentFormPages.length,
+              itemCount: _contentFormPages.length,
               physics: const NeverScrollableScrollPhysics(),
               onPageChanged: (int page) {
                 setState(() {
@@ -128,13 +130,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               itemBuilder: (context, index) {
-                final contentPage = contentFormPages[index];
+                final contentPage = _contentFormPages[index];
                 return SingleChildScrollView(
                   scrollDirection: Axis.vertical,
                   child: Column(
                     children: [
-
-
                       Padding(
                         padding: const EdgeInsets.fromLTRB(15, 15, 100, 40),
                         child: Text(
@@ -145,48 +145,68 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       for (var option in contentPage.optionTile)
                         OptionTileWidget(
-                          text: option[0],
-                          isSelected: option[1],
+                          icon: option[0],
+                          text: option[1],
+                          isSelected: option[2],
                           onSelected: (value) {
                             setState(() {
                               // Desmarca todos los demás RadioButton
                               for (var otherOption in contentPage.optionTile) {
-                                otherOption[1] = false;
+                                otherOption[2] = false;
                               }
 
-                              option[1] = value;
+                              option[2] = value;
+
+                              if (_currentPage == 0 ||
+                                  _currentPage == 1 ||
+                                  _currentPage == 2 ||
+                                  _currentPage == 3 ||
+                                  _currentPage == 4) {
+                                if (option[2] == true) {
+                                  _canNext = true;
+                                }
+                              }
 
                               if (_currentPage == 0 &&
-                                  option[0] == '❓    No lo sé') {
+                                  option[1] == 'No lo sé') {
                                 _helpDialogTypeAccount(context);
-                                option[1] = false;
+                                option[2] = false;
+                                _canNext = false;
                               }
 
                               //guarda la info sobre tipo de archivo
                               if (_currentPage == 1) {
-                                fileType = option[0];
+                                fileType = option[1];
                                 print(
                                     'actualPage: $_currentPage FileType Selected: $fileType');
 
                                 //guarda la info de tiempo de borrado y habilita el boton de finalizar
                               } else if (_currentPage == 4) {
-                                timeDeleted = option[0];
+                                timeDeleted = option[1];
                                 print(
                                     'actualPage: $_currentPage TimeDeleted Selected: $timeDeleted');
 
-                                finishPage = true;
+                                _finishPage = true;
+                              }
+                              if (_currentPage == 3 && option[1] == 'Español') {
+                                _infoDialogTypeLanguage(context);
+                              }
+
+                              if (_currentPage == 4 &&
+                                  option[1] == 'Hace más de 25 días') {
+                                _infoDialogMaxDays(context);
                               }
 
                               if (_currentPage != 4) {
-                                finishPage = false;
+                                _finishPage = false;
                               }
 
                               /*  print('FileType Selected: $fileType');
                               print('TimeDeleted Selected: $timeDeleted'); */
 
-                              answerPage = AnswerPage(fileType, timeDeleted);
+                              _answerPage = AnswerPage(fileType, timeDeleted);
 
-                              prompt =
+                              _prompt =
                                   'Como usuario de Google Drive requiero la restauración de mis archivos tipo $fileType, ' +
                                       'que eliminé por accidente $timeDeleted';
 
@@ -213,11 +233,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: NavBarHomeSection(
-        finishPage: finishPage,
+        finishPage: _finishPage,
         currentPage: _currentPage,
         pageController: _pageController,
-        contentPages: contentFormPages,
-        promt: prompt,
+        contentPages: _contentFormPages,
+        prompt: _prompt,
+        canNext: _canNext,
       ),
     );
   }
@@ -244,6 +265,96 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Text(
                           textAlign: TextAlign.center,
                           'Si tu cuenta no termina en "@gmail.com" entonces es institucional.'),
+                    ),
+                    Container(
+                      alignment: Alignment.topCenter,
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all<Color>(Colors.green),
+                          ),
+                          child: const Text(
+                            'Entiendo',
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                          onPressed: () => {
+                                Navigator.pop(context),
+                              }),
+                    ),
+                  ],
+                ),
+              ]);
+        });
+  }
+
+  void _infoDialogTypeLanguage(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+              title: const Center(
+                child: Text(
+                  "Importante",
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              children: <Widget>[
+                Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
+                      child: Text(
+                          textAlign: TextAlign.center,
+                          'Ten en cuenta que la solicitud de recuperación se hace en inglés, sin importar que el idioma de tu cuenta esté en español.'),
+                    ),
+                    Container(
+                      alignment: Alignment.topCenter,
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStateProperty.all<Color>(Colors.green),
+                          ),
+                          child: const Text(
+                            'Entiendo',
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                          onPressed: () => {
+                                Navigator.pop(context),
+                              }),
+                    ),
+                  ],
+                ),
+              ]);
+        });
+  }
+
+  void _infoDialogMaxDays(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+              title: const Center(
+                child: Text(
+                  "Dato curioso",
+                  style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              children: <Widget>[
+                Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
+                      child: Text(
+                          textAlign: TextAlign.center,
+                          'La mayoría de los usuarios recuperan sus archivos de Google Drive siempre y cuando los soliciten en un plazo menor a 25 días desde su eliminación.'),
                     ),
                     Container(
                       alignment: Alignment.topCenter,

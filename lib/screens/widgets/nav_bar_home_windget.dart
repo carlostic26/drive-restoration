@@ -8,7 +8,8 @@ class NavBarHomeSection extends StatelessWidget {
   bool finishPage;
   int currentPage;
   List<ContentFormPage> contentPages;
-  String promt;
+  String prompt;
+  bool canNext;
 
   NavBarHomeSection(
       {super.key,
@@ -16,7 +17,8 @@ class NavBarHomeSection extends StatelessWidget {
       required this.currentPage,
       required this.pageController,
       required this.contentPages,
-      required this.promt});
+      required this.canNext,
+      required this.prompt});
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +59,12 @@ class NavBarHomeSection extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (_) => FinishScreenPages(
-                                  prompt: promt,
+                                  prompt: prompt,
                                 )));
                   } else {
-                    _goToNextPage();
+                    if (canNext) {
+                      _goToNextPage();
+                    }
                   }
                 },
                 style: TextButton.styleFrom(

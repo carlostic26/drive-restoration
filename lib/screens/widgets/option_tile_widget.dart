@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class OptionTileWidget extends StatelessWidget {
   final String text;
+  final String icon;
   final bool isSelected;
   final ValueChanged<bool?> onSelected;
 
   OptionTileWidget({
+    required this.icon,
     required this.text,
     required this.isSelected,
     required this.onSelected,
@@ -23,6 +25,12 @@ class OptionTileWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         child: Row(
           children: [
+            Text(
+              icon,
+              style: TextStyle(fontSize: 14),
+              overflow: TextOverflow.visible,
+            ),
+
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
