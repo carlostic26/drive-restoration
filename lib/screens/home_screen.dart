@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
 import 'package:recu_drive/screens/finish_screen.dart';
+import 'package:recu_drive/screens/widgets/drawer_home_widget.dart';
 import 'package:recu_drive/screens/widgets/nav_bar_home_windget.dart';
 import 'package:recu_drive/screens/widgets/option_tile_widget.dart';
 
@@ -84,6 +85,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
       appBar: AppBar(
+        leading: Builder(builder: (context) {
+          return IconButton(
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            icon: const Icon(
+              Icons.menu,
+              color: Colors.white,
+            ),
+          );
+        }),
         backgroundColor: const Color.fromARGB(255, 1, 171, 60),
         title: const Text(
           'Formulario de recuperación',
@@ -169,7 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               if (_currentPage == 0 &&
                                   option[1] == 'No lo sé') {
-                                _helpDialogTypeAccount(context);
+                                _infoDialogService(
+                                    context,
+                                    'Conoce tu tipo de cuenta',
+                                    'Si tu cuenta no termina en "@gmail.com" entonces es institucional.');
                                 option[2] = false;
                                 _canNext = false;
                               }
@@ -188,13 +203,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 _finishPage = true;
                               }
-                              if (_currentPage == 3 && option[1] == 'Español') {
-                                _infoDialogTypeLanguage(context);
+                              if (_currentPage == 3 && option[1] == 'Español' ||
+                                  option[1] == 'Otro') {
+                                _infoDialogService(context, 'Dato curioso',
+                                    'Ten en cuenta que la solicitud de recuperación se hace en inglés, sin importar que el idioma de tu cuenta esté en español.');
                               }
 
                               if (_currentPage == 4 &&
                                   option[1] == 'Hace más de 25 días') {
-                                _infoDialogMaxDays(context);
+                                _infoDialogService(context, 'Dato curioso',
+                                    'La mayoría de los usuarios recuperan sus archivos de Google Drive siempre y cuando los soliciten en un plazo menor a 25 días desde su eliminación.');
                               }
 
                               if (_currentPage != 4) {
@@ -240,18 +258,21 @@ class _HomeScreenState extends State<HomeScreen> {
         prompt: _prompt,
         canNext: _canNext,
       ),
+      drawer: _getDrawer(context),
     );
   }
 
-  void _helpDialogTypeAccount(BuildContext context) {
+  void _infoDialogService(
+      BuildContext context, String title, String description) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(
-              title: const Center(
+              title: Center(
+                //Dato curioso
                 child: Text(
-                  "Conoce tu tipo de cuenta",
-                  style: TextStyle(
+                  title,
+                  style: const TextStyle(
                       color: Colors.blue,
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold),
@@ -260,11 +281,9 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 Column(
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
-                      child: Text(
-                          textAlign: TextAlign.center,
-                          'Si tu cuenta no termina en "@gmail.com" entonces es institucional.'),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 25),
+                      child: Text(textAlign: TextAlign.center, description),
                     ),
                     Container(
                       alignment: Alignment.topCenter,
@@ -288,93 +307,78 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  void _infoDialogTypeLanguage(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-              title: const Center(
-                child: Text(
-                  "Importante",
+  Widget _getDrawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 1, 171, 60),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Image.asset(
+                  'assets/logo.png', // Asegúrate de tener esta imagen en tu proyecto
+                  height: 80,
+                  width: 80,
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'RecuDrive',
                   style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              children: <Widget>[
-                Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
-                      child: Text(
-                          textAlign: TextAlign.center,
-                          'Ten en cuenta que la solicitud de recuperación se hace en inglés, sin importar que el idioma de tu cuenta esté en español.'),
-                    ),
-                    Container(
-                      alignment: Alignment.topCenter,
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all<Color>(Colors.green),
-                          ),
-                          child: const Text(
-                            'Entiendo',
-                            style: TextStyle(fontSize: 15, color: Colors.white),
-                          ),
-                          onPressed: () => {
-                                Navigator.pop(context),
-                              }),
-                    ),
-                  ],
-                ),
-              ]);
-        });
-  }
-
-  void _infoDialogMaxDays(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-              title: const Center(
-                child: Text(
-                  "Dato curioso",
+                const Text(
+                  '1.0.1',
                   style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
                 ),
-              ),
-              children: <Widget>[
-                Column(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(15, 10, 15, 25),
-                      child: Text(
-                          textAlign: TextAlign.center,
-                          'La mayoría de los usuarios recuperan sus archivos de Google Drive siempre y cuando los soliciten en un plazo menor a 25 días desde su eliminación.'),
-                    ),
-                    Container(
-                      alignment: Alignment.topCenter,
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor:
-                                WidgetStateProperty.all<Color>(Colors.green),
-                          ),
-                          child: const Text(
-                            'Entiendo',
-                            style: TextStyle(fontSize: 15, color: Colors.white),
-                          ),
-                          onPressed: () => {
-                                Navigator.pop(context),
-                              }),
-                    ),
-                  ],
-                ),
-              ]);
-        });
+              ],
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.tips_and_updates),
+            title: const Text('Tips'),
+            onTap: () {
+              // Implementar navegación
+              Navigator.pop(context);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.help),
+            title: const Text('Ayuda'),
+            onTap: () {
+              // Implementar navegación
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: const Text('Política de Privacidad'),
+            onTap: () {
+              // Implementar navegación
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('Info de la App'),
+            onTap: () {
+              // Implementar navegación
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

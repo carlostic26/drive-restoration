@@ -35,6 +35,13 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: const Color.fromARGB(255, 1, 171, 60),
         title: const Text(
           'Finalizar solicitud',
@@ -69,7 +76,7 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                   const Padding(
                     padding: EdgeInsets.fromLTRB(10, 1, 5, 5),
                     child: Text(
-                      '⚠️ Copialo y pegalo en el apartado de "Información adicional útil"',
+                      '⚠️ Es posible que el formulario de recuperación de Google te requiera un texto de solicitud. Copialo y pegalo en el apartado de "Información adicional útil"',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -191,14 +198,13 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white60, // Color de fondo del container
-                      borderRadius: BorderRadius.circular(
-                          30), // Radio del borde redondeado
+                      borderRadius: BorderRadius.circular(30),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(
-                              0.5), // Color de la sombra con opacidad
-                          spreadRadius: 3, // Extensión de la sombra
-                          blurRadius: 10, // Difuminado de la sombra
+                              0.2), // Color de la sombra con opacidad
+                          spreadRadius: 3,
+                          blurRadius: 10,
                           offset:
                               const Offset(0, 3), // Desplazamiento de la sombra
                         ),

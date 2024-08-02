@@ -39,8 +39,7 @@ class NavBarHomeSection extends StatelessWidget {
                   shadowColor: Colors.black,
                   elevation: 5,
                   minimumSize: const Size(0, 50),
-                  backgroundColor:
-                      const Color(0xFFF5F5F5), // Un blanco ligeramente atenuado
+                  backgroundColor: const Color(0xFFF5F5F5),
                   foregroundColor: Colors.black87, // Color del texto
                 ),
                 child: const Text(
@@ -55,7 +54,7 @@ class NavBarHomeSection extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   if (finishPage) {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
                             builder: (_) => FinishScreenPages(
@@ -71,8 +70,10 @@ class NavBarHomeSection extends StatelessWidget {
                   shadowColor: Colors.black,
                   elevation: 5,
                   minimumSize: const Size(0, 50),
-                  backgroundColor: const Color.fromARGB(255, 0, 130, 30),
-                  foregroundColor: Colors.white70,
+                  backgroundColor: canNext
+                      ? const Color.fromARGB(255, 0, 130, 30)
+                      : const Color(0xFFF5F5F5),
+                  foregroundColor: canNext ? Colors.white70 : Colors.black,
                 ),
                 child: Text(finishPage ? 'FINALIZAR' : 'SIGUIENTE'),
               ),
