@@ -1,6 +1,8 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:recu_drive/screens/web_view_form_screen.dart';
+import 'package:recu_drive/screens/widgets/drawer_home_widget.dart';
+import 'package:recu_drive/screens/widgets/info_dialog_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FinishScreenPages extends StatefulWidget {
@@ -42,6 +44,14 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
+            ),
+          ),
+        ],
         backgroundColor: const Color.fromARGB(255, 1, 171, 60),
         title: const Text(
           'Finalizar solicitud',
@@ -73,17 +83,6 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                     ),
                   ),
 
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(10, 1, 5, 5),
-                    child: Text(
-                      '⚠️ Es posible que el formulario de recuperación de Google te requiera un texto de solicitud. Copialo y pegalo en el apartado de "Información adicional útil"',
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  //Spacer(),
-
                   const SizedBox(
                     height: 30,
                   ),
@@ -97,9 +96,15 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             onPressed: () {
-                              //copiarPrompt(context, widget.prompt);
+                              //todo: abrir dialogo con el texto de: es posible...
 
-                              //TODO: Abrir dialogo y explicar con gif que es el promt o text
+                              InfoDialogService.showInfoDialog(
+                                  context,
+                                  '¿Para qué me sirve?',
+                                  '⚠️ Es posible que el formulario de recuperación de Google te requiera un texto de solicitud. Copialo y pegalo en el apartado de "Información adicional útil"',
+                                  'Finish Screen Prompt',
+                                  0,
+                                  PageController());
                             },
                             icon: const Icon(
                               Icons.help_outline,
@@ -120,11 +125,6 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                       ),
                     ]),
                   ),
-
-                  //TEXT PROMT - con iconButton de copiar
-
-                  //BOTTON: PROCEDER
-                  //const Spacer(),
 
                   const SizedBox(
                     height: 15,
@@ -169,16 +169,13 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                               foregroundColor: Colors.white,
                             ),
                             onPressed: () {
-                              //launchURL(urlForm);
-
-                              //TODO: si no se copia el texno no puede avanzar
-
-                              if (_currentPage < 2) {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                );
-                              }
+                              InfoDialogService.showInfoDialog(
+                                  context,
+                                  'Importante',
+                                  'El tiempo de recuperación de tus archivos puede tardar entre 5 horas y 3 dias. Google te enviará un correo informandote la decisión.',
+                                  'Finish Screen',
+                                  _currentPage,
+                                  _pageController);
                             },
                             icon: const Icon(Icons.arrow_forward_ios,
                                 color: Colors.white),
@@ -281,6 +278,9 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
             }
           }),
       bottomNavigationBar: const SizedBox(height: 80, child: Placeholder()),
+      endDrawer: DrawerHomeWidget(
+        context: context,
+      ),
     );
   }
 

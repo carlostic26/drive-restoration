@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:recu_drive/config/styles/constants/enviroment.dart';
+import 'package:recu_drive/screens/widgets/info_dialog_service.dart';
 
 class DrawerHomeWidget extends StatelessWidget {
   BuildContext? context;
   DrawerHomeWidget({super.key, required context});
+  String flutterVersion = '3.22.1';
 
   @override
   Widget build(BuildContext context) {
@@ -15,59 +18,114 @@ class DrawerHomeWidget extends StatelessWidget {
               color: Color.fromARGB(255, 1, 171, 60),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Image.asset(
-                  'assets/app_icon.png', // Asegúrate de tener esta imagen en tu proyecto
-                  height: 60,
-                  width: 60,
+                  'assets/logo.png',
+                  height: 80,
+                  width: 80,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 2),
                 const Text(
-                  'Nombre de la App',
+                  'RecuDrive',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const Text(
+                  '1.0.1',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                  ),
+                ),
               ],
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.info),
-            title: const Text('Información de la App'),
+            leading: const Icon(Icons.tips_and_updates),
+            title: const Text('Tips'),
             onTap: () {
-              // Implementar navegación
               Navigator.pop(context);
+              // Implementar navegación
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.help),
+            title: const Text('Ayuda'),
+            onTap: () {
+              Navigator.pop(context);
+              // Implementar navegación
             },
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Política de Privacidad'),
             onTap: () {
-              // Implementar navegación
               Navigator.pop(context);
+              // Implementar navegación
             },
           ),
           ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text('Ayuda'),
+            leading: const Icon(Icons.info),
+            title: const Text('Info de la App'),
             onTap: () {
-              // Implementar navegación
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('Versión'),
-            onTap: () {
-              // Implementar navegación
-              Navigator.pop(context);
+              dialogVersion(context, 'Información',
+                  'RecuDrive es una app desarrollada por TICnoticos para ayudar a los usuarios a recuperar sus archivos eliminados por error de la papelera de Google Drive.\n\nLa app es una guia donde se explica paso a paso que hacer para restablecer los archivos.\n\nVersión: $flutterVersion');
             },
           ),
         ],
       ),
+    );
+  }
+
+  Future<dynamic> dialogVersion(BuildContext context, title, description) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: Center(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.blue,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          children: <Widget>[
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15, 10, 15, 25),
+                  child: Text(textAlign: TextAlign.center, description),
+                ),
+                Container(
+                  alignment: Alignment.topCenter,
+                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            WidgetStateProperty.all<Color>(Colors.green),
+                      ),
+                      child: const Text(
+                        'Ok',
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      }),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
