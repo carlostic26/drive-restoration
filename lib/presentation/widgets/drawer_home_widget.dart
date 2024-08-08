@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/config/styles/constants/enviroment.dart';
-import 'package:recu_drive/screens/widgets/info_dialog_service.dart';
+import 'package:recu_drive/presentation/screens/guias_screen.dart';
+import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
 
 class DrawerHomeWidget extends StatelessWidget {
   BuildContext? context;
@@ -47,10 +48,10 @@ class DrawerHomeWidget extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.tips_and_updates),
-            title: const Text('Tips'),
+            title: const Text('Guías'),
             onTap: () {
-              Navigator.pop(context);
-              // Implementar navegación
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const GuiasScreen()));
             },
           ),
           const Divider(),
@@ -59,7 +60,6 @@ class DrawerHomeWidget extends StatelessWidget {
             title: const Text('Ayuda'),
             onTap: () {
               Navigator.pop(context);
-              // Implementar navegación
             },
           ),
           ListTile(
@@ -67,7 +67,6 @@ class DrawerHomeWidget extends StatelessWidget {
             title: const Text('Política de Privacidad'),
             onTap: () {
               Navigator.pop(context);
-              // Implementar navegación
             },
           ),
           ListTile(

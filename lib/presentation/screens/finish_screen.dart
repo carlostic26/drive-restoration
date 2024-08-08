@@ -1,8 +1,8 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
-import 'package:recu_drive/screens/web_view_form_screen.dart';
-import 'package:recu_drive/screens/widgets/drawer_home_widget.dart';
-import 'package:recu_drive/screens/widgets/info_dialog_service.dart';
+import 'package:recu_drive/presentation/screens/web_view_form_screen.dart';
+import 'package:recu_drive/presentation/widgets/drawer_home_widget.dart';
+import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FinishScreenPages extends StatefulWidget {
@@ -33,6 +33,9 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
   Widget build(BuildContext context) {
     String urlForm =
         'https://support.google.com/drive/answer/1716222?visit_id=638581436457838840-4120509564&rd=1'; //todo: Hacer gifs en cada page o pantalla si es necesario
+
+    String urlImgForm =
+        'https://uohqvmtropvunofucpre.supabase.co/storage/v1/object/public/img/img/formulario%20ejemplo%20en%20espanol.PNG';
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
@@ -98,13 +101,11 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                             onPressed: () {
                               //todo: abrir dialogo con el texto de: es posible...
 
-                              InfoDialogService.showInfoDialog(
+                              InfoDialogService.showInfoDialogImg(
                                   context,
                                   '¿Para qué me sirve?',
-                                  '⚠️ Es posible que el formulario de recuperación de Google te requiera un texto de solicitud. Copialo y pegalo en el apartado de "Información adicional útil"',
-                                  'Finish Screen Prompt',
-                                  0,
-                                  PageController());
+                                  '⚠️ Es posible que Google te pida enviar un correo o rellenar un formulario de recuperación, donde se requiere un texto de solicitud, el cual deberás copiar y pegar en el apartado correspondiente.',
+                                  urlImgForm);
                             },
                             icon: const Icon(
                               Icons.help_outline,

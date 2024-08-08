@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:recu_drive/screens/loading_screen.dart';
+import 'package:recu_drive/infrastructure/sqlite_db.dart';
+import 'package:recu_drive/presentation/screens/loading_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //init db sqlite
+  await LocalDatabase().initializeDB();
+
   runApp(const MyApp());
 }
 

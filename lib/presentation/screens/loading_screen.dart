@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:recu_drive/screens/home_screen.dart';
+import 'package:recu_drive/presentation/screens/home_screen.dart';
 
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({super.key});

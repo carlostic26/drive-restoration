@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
 
-import '../finish_screen_pages.dart';
+import '../screens/finish_screen.dart';
 
 class NavBarHomeSection extends StatelessWidget {
   late PageController pageController;

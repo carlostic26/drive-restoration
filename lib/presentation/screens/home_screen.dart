@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
-import 'package:recu_drive/screens/finish_screen.dart';
-import 'package:recu_drive/screens/widgets/drawer_home_widget.dart';
-import 'package:recu_drive/screens/widgets/info_dialog_service.dart';
-import 'package:recu_drive/screens/widgets/nav_bar_home_windget.dart';
-import 'package:recu_drive/screens/widgets/option_tile_widget.dart';
+import 'package:recu_drive/presentation/widgets/drawer_home_widget.dart';
+import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
+import 'package:recu_drive/presentation/widgets/nav_bar_home_windget.dart';
+import 'package:recu_drive/presentation/widgets/option_tile_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
