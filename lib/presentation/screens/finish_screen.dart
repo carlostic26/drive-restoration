@@ -1,5 +1,12 @@
+import 'dart:io';
+
 import 'package:clipboard/clipboard.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:recu_drive/config/styles/constants/ads/ads.dart';
+import 'package:recu_drive/presentation/screens/guias_screen.dart';
 import 'package:recu_drive/presentation/screens/web_view_form_screen.dart';
 import 'package:recu_drive/presentation/widgets/drawer_home_widget.dart';
 import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
@@ -13,20 +20,123 @@ class FinishScreenPages extends StatefulWidget {
   State<FinishScreenPages> createState() => _FinishScreenPagesState();
 }
 
+const int maxAttempts = 5;
+
 class _FinishScreenPagesState extends State<FinishScreenPages> {
   late PageController _pageController;
   int _currentPage = 0;
+
+  //initializing banner ad
+  BannerAd? _anchoredAdaptiveAd;
+
+  //initializing intersticial ad
+  InterstitialAd? interstitialAd;
+  int interstitialAttempts = 0;
+
+  RecudriveAds recuAds = RecudriveAds();
+  bool _isAdLoaded = false;
+  bool _isLoaded = false;
+
+  static const AdRequest request = AdRequest(
+      //keywords: ['',''],
+      //contentUrl: '',
+      //nonPersonalizedAds: false
+      );
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    _loadAdaptativeAd();
+    _createInterstitialAd();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAdaptativeAd();
+    _createInterstitialAd();
+  }
+
+  Future<void> _loadAdaptativeAd() async {
+    if (_isAdLoaded) {
+      return;
+    }
+
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+
+    if (size == null) {
+      //print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    BannerAd loadedAd = BannerAd(
+      adUnitId: recuAds.bannerAd,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          //print('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            _anchoredAdaptiveAd = ad as BannerAd;
+            _isLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('Anchored adaptive banner failedToLoad: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    try {
+      await loadedAd.load();
+    } catch (e) {
+      //print('Error loading anchored adaptive banner: $e');
+      loadedAd.dispose();
+    }
+  }
+
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        // ignore: deprecated_member_use
+        adUnitId: recuAds.interstitialAd,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
+          interstitialAd = ad;
+          interstitialAttempts = 0;
+        }, onAdFailedToLoad: (error) {
+          interstitialAttempts++;
+          interstitialAd = null;
+
+          if (interstitialAttempts <= maxAttempts) {
+            _createInterstitialAd();
+          }
+        }));
+  }
+
+  void _showInterstitialAd() {
+    interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        //onAdShowedFullScreenContent: (ad) => print('ad showed $ad'),
+
+        //when ad went closes
+        onAdDismissedFullScreenContent: (ad) async {
+      ad.dispose();
+    }, onAdFailedToShowFullScreenContent: (ad, error) {
+      ad.dispose();
+      //print('failed to show the ad $ad');
+    });
+
+    interstitialAd!.show();
+    interstitialAd = null;
   }
 
   @override
@@ -169,7 +279,7 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                                   const Color.fromARGB(255, 1, 171, 60),
                               foregroundColor: Colors.white,
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               InfoDialogService.showInfoDialog(
                                   context,
                                   'Importante',
@@ -177,6 +287,34 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                                   'Finish Screen',
                                   _currentPage,
                                   _pageController);
+
+                              //show interstitial
+
+                              try {
+                                final result =
+                                    await InternetAddress.lookup('google.com');
+                                if (result.isNotEmpty &&
+                                    result[0].rawAddress.isNotEmpty) {
+                                  _showInterstitialAd();
+
+                                  /*   int randomNumber = Random().nextInt(10) + 1; // Genera un número entre 1 y 10
+                                if (randomNumber <= 6) {
+                                  print('\n\n\n\nINTERTITIALI ATTEMP\n\n\n\n');
+                                  showInterstitialAd();
+                                } else {
+                                  print('\n\n\n\nREWARDED ATTEMP\n\n\n\n');
+                                  showRewardedAd();
+                                } */
+                                  //Navigator.pop(context);
+                                }
+                              } on SocketException catch (_) {
+                                Fluttertoast.showToast(
+                                  msg:
+                                      "No estás conectado a internet.\nConéctate a Wi-Fi o datos móviles.",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.CENTER,
+                                );
+                              }
                             },
                             icon: const Icon(Icons.arrow_forward_ios,
                                 color: Colors.white),
@@ -190,95 +328,129 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                 ],
               );
             } else {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 40, right: 40),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white60, // Color de fondo del container
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(
-                              0.2), // Color de la sombra con opacidad
-                          spreadRadius: 3,
-                          blurRadius: 10,
-                          offset:
-                              const Offset(0, 3), // Desplazamiento de la sombra
-                        ),
-                      ],
-                    ),
-                    height: 300,
-                    //color: Colors.grey[200], // Color de fondo para el contenedor
-                    padding: const EdgeInsets.all(
-                        20.0), // Padding interno del contenedor
-
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Fila con iconos
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.play_arrow,
-                                size: 100,
-                                color: Colors.green,
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => WebViewScreen(
-                                              urlForm: urlForm,
-                                            )));
-                              },
-                            ),
-                            const SizedBox(width: 20),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.public,
-                                size: 100,
-                                color: Colors.green,
-                              ),
-                              onPressed: () {
-                                // Acción cuando se presiona el botón de internet
-                                print('Internet button pressed');
-
-                                //Launch url
-                                launchURL(urlForm);
-                              },
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 40, right: 40),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white60, // Color de fondo del container
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(
+                                  0.2), // Color de la sombra con opacidad
+                              spreadRadius: 3,
+                              blurRadius: 10,
+                              offset: const Offset(
+                                  0, 3), // Desplazamiento de la sombra
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        // Fila con textos
-                        const Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        height: 300,
+                        //color: Colors.grey[200], // Color de fondo para el contenedor
+                        padding: const EdgeInsets.all(
+                            20.0), // Padding interno del contenedor
+
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Abrir aquí',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                            // Fila con iconos
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.play_arrow,
+                                        size: 100,
+                                        color: Colors.green,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (_) => WebViewScreen(
+                                                      urlForm: urlForm,
+                                                    )));
+                                      },
+                                    ),
+                                    const Text(
+                                      'Abrir aquí',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 20),
+                                Column(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.public,
+                                        size: 100,
+                                        color: Colors.green,
+                                      ),
+                                      onPressed: () {
+                                        // Acción cuando se presiona el botón de internet
+                                        print('Internet button pressed');
+
+                                        //Launch url
+                                        launchURL(urlForm);
+                                      },
+                                    ),
+                                    const Text(
+                                      'Abrir en navegador',
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 20),
-                            Text(
-                              'Abrir en navegador',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            ),
+
+                            const SizedBox(height: 20),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: "Ya envié mi solicitud.\n¿Ahora qué?",
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                        fontSize: 16,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const GuiasScreen()));
+                        },
+                    ),
+                  )
+                ],
               );
             }
           }),
-      bottomNavigationBar: const SizedBox(height: 80, child: Placeholder()),
+      bottomNavigationBar: _anchoredAdaptiveAd != null
+          ? Container(
+              color: Colors.transparent,
+              width: _anchoredAdaptiveAd?.size.width.toDouble(),
+              height: _anchoredAdaptiveAd?.size.height.toDouble(),
+              child: AdWidget(ad: _anchoredAdaptiveAd!),
+            )
+          : const SizedBox(),
       endDrawer: DrawerHomeWidget(
         context: context,
       ),

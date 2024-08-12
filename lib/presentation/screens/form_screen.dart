@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:recu_drive/config/styles/constants/ads/ads.dart';
 import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
 import 'package:recu_drive/presentation/widgets/drawer_home_widget.dart';
@@ -6,21 +8,33 @@ import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
 import 'package:recu_drive/presentation/widgets/nav_bar_home_windget.dart';
 import 'package:recu_drive/presentation/widgets/option_tile_widget.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class FormScreen extends StatefulWidget {
+  const FormScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<FormScreen> createState() => _FormScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _FormScreenState extends State<FormScreen> {
   late PageController _pageController;
   int _currentPage = 0;
   bool _finishPage = false;
 
   bool _canNext = false;
-
   String _prompt = '';
+
+  //initializing banner ad
+  BannerAd? _anchoredAdaptiveAd;
+
+  RecudriveAds recuAds = RecudriveAds();
+  bool _isAdLoaded = false;
+  bool _isLoaded = false;
+
+  static const AdRequest request = AdRequest(
+      //keywords: ['',''],
+      //contentUrl: '',
+      //nonPersonalizedAds: false
+      );
 
   AnswerPage _answerPage = AnswerPage('', '');
 
@@ -31,12 +45,60 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
+    _loadAdaptativeAd();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAdaptativeAd();
+  }
+
+  Future<void> _loadAdaptativeAd() async {
+    if (_isAdLoaded) {
+      return;
+    }
+
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+
+    if (size == null) {
+      //print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    BannerAd loadedAd = BannerAd(
+      adUnitId: recuAds.bannerAd,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          //print('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            _anchoredAdaptiveAd = ad as BannerAd;
+            _isLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('Anchored adaptive banner failedToLoad: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    try {
+      await loadedAd.load();
+    } catch (e) {
+      //print('Error loading anchored adaptive banner: $e');
+      loadedAd.dispose();
+    }
   }
 
   final List<ContentFormPage> _contentFormPages = [
@@ -206,7 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 InfoDialogService.showInfoDialog(
                                     context,
                                     'Dato curioso',
-                                    'Ten en cuenta que la solicitud de recuperación se hace en inglés, sin importar que el idioma de tu cuenta esté en español.',
+                                    'Ten en cuenta que Google responde más rápido a las solicitudes de recuperación en inglés',
                                     'Home Screen',
                                     0,
                                     PageController());
@@ -228,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
 
                               /*  print('FileType Selected: $fileType');
-                              print('TimeDeleted Selected: $timeDeleted'); */
+                                print('TimeDeleted Selected: $timeDeleted'); */
 
                               _answerPage = AnswerPage(fileType, timeDeleted);
 
@@ -256,16 +318,27 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          SizedBox(
+            height: 80,
+            child: NavBarHomeSection(
+              finishPage: _finishPage,
+              currentPage: _currentPage,
+              pageController: _pageController,
+              contentPages: _contentFormPages,
+              prompt: _prompt,
+              canNext: _canNext,
+            ),
+          ),
         ],
       ),
-      bottomNavigationBar: NavBarHomeSection(
-        finishPage: _finishPage,
-        currentPage: _currentPage,
-        pageController: _pageController,
-        contentPages: _contentFormPages,
-        prompt: _prompt,
-        canNext: _canNext,
-      ),
+      bottomNavigationBar: _anchoredAdaptiveAd != null
+          ? Container(
+              color: Colors.transparent,
+              width: _anchoredAdaptiveAd?.size.width.toDouble(),
+              height: _anchoredAdaptiveAd?.size.height.toDouble(),
+              child: AdWidget(ad: _anchoredAdaptiveAd!),
+            )
+          : const SizedBox(),
       endDrawer: DrawerHomeWidget(
         context: context,
       ),

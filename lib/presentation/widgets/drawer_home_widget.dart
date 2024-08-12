@@ -56,13 +56,6 @@ class DrawerHomeWidget extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.help),
-            title: const Text('Ayuda'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Política de Privacidad'),
             onTap: () {

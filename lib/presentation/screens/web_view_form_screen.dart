@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:recu_drive/config/styles/constants/ads/ads.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewScreen extends StatefulWidget {
@@ -13,6 +15,19 @@ class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController controller;
   bool isLoading = true;
   int progressValue = 0;
+
+  //initializing banner ad
+  BannerAd? _anchoredAdaptiveAd;
+
+  RecudriveAds recuAds = RecudriveAds();
+  bool _isAdLoaded = false;
+  bool _isLoaded = false;
+
+  static const AdRequest request = AdRequest(
+      //keywords: ['',''],
+      //contentUrl: '',
+      //nonPersonalizedAds: false
+      );
 
   @override
   void initState() {
@@ -43,6 +58,55 @@ class _WebViewScreenState extends State<WebViewScreen> {
         ),
       )
       ..loadRequest(Uri.parse(widget.urlForm));
+
+    _loadAdaptativeAd();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadAdaptativeAd();
+  }
+
+  Future<void> _loadAdaptativeAd() async {
+    if (_isAdLoaded) {
+      return;
+    }
+
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+
+    if (size == null) {
+      //print('Unable to get height of anchored banner.');
+      return;
+    }
+
+    BannerAd loadedAd = BannerAd(
+      adUnitId: recuAds.bannerAd,
+      size: size,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          //print('$ad loaded: ${ad.responseInfo}');
+          setState(() {
+            _anchoredAdaptiveAd = ad as BannerAd;
+            _isLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          print('Anchored adaptive banner failedToLoad: $error');
+          ad.dispose();
+        },
+      ),
+    );
+
+    try {
+      await loadedAd.load();
+    } catch (e) {
+      //print('Error loading anchored adaptive banner: $e');
+      loadedAd.dispose();
+    }
   }
 
   @override
@@ -53,7 +117,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ),
       body: Stack(
         children: [
-          WebViewWidget(controller: controller),
+          Column(
+            children: [
+              Expanded(child: WebViewWidget(controller: controller)),
+            ],
+          ),
           if (isLoading)
             Center(
               child: CircularProgressIndicator(
@@ -62,6 +130,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
             ),
         ],
       ),
+      bottomNavigationBar: _anchoredAdaptiveAd != null
+          ? Container(
+              color: Colors.transparent,
+              width: _anchoredAdaptiveAd?.size.width.toDouble(),
+              height: _anchoredAdaptiveAd?.size.height.toDouble(),
+              child: AdWidget(ad: _anchoredAdaptiveAd!),
+            )
+          : const SizedBox(),
     );
   }
 }

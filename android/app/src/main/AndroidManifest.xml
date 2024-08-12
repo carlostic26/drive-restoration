@@ -6,6 +6,14 @@
         android:label="recu_drive"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+           <!-- change ID app  to test ID in the next line. actually is the real id: 433...-->
+        <!-- Sample AdMob app ID, test: ca-app-pub-3940256099942544~3347511713  ||  new: ca-app-pub-4336409771912215~6694057082 --> 
+        <meta-data 
+           android:name="com.google.android.gms.ads.APPLICATION_ID" 
+           android:value="ca-app-pub-3940256099942544~3347511713"/>
+
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
