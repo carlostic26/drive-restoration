@@ -106,6 +106,8 @@ class _GuiasScreenState extends State<GuiasScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double heightScreen = MediaQuery.of(context).size.height;
+    double widthScreen = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 1, 171, 60),
@@ -144,16 +146,14 @@ class _GuiasScreenState extends State<GuiasScreen> {
                     color: index == 0 ? Colors.transparent : Colors.black,
                   ),
 
-                  //title
                   Row(
                     children: [
                       //circle
-
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: widthScreen * 0.1,
+                          height: heightScreen * 0.04,
                           decoration: const BoxDecoration(
                             color: Colors.blue,
                             shape: BoxShape.circle,

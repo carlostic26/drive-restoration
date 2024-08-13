@@ -3,7 +3,7 @@ import 'package:recu_drive/domain/entities/content_form_page.dart';
 
 import '../screens/finish_screen.dart';
 
-class NavBarHomeSection extends StatelessWidget {
+class BottomSection extends StatelessWidget {
   late PageController pageController;
   bool finishPage;
   int currentPage;
@@ -11,7 +11,7 @@ class NavBarHomeSection extends StatelessWidget {
   String prompt;
   bool canNext;
 
-  NavBarHomeSection(
+  BottomSection(
       {super.key,
       required this.finishPage,
       required this.currentPage,
@@ -23,7 +23,6 @@ class NavBarHomeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
       color: const Color.fromARGB(255, 226, 226, 226),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

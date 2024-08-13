@@ -34,6 +34,7 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
   int interstitialAttempts = 0;
 
   RecudriveAds recuAds = RecudriveAds();
+
   bool _isAdLoaded = false;
   bool _isLoaded = false;
 
@@ -141,6 +142,9 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
 
   @override
   Widget build(BuildContext context) {
+    double heightScreen = MediaQuery.of(context).size.height;
+    double widthScreen = MediaQuery.of(context).size.width;
+
     String urlForm =
         'https://support.google.com/drive/answer/1716222?visit_id=638581436457838840-4120509564&rd=1'; //todo: Hacer gifs en cada page o pantalla si es necesario
 
@@ -196,8 +200,8 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 30,
+                  SizedBox(
+                    height: heightScreen * 0.05,
                   ),
 
                   Padding(
@@ -209,8 +213,6 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             onPressed: () {
-                              //todo: abrir dialogo con el texto de: es posible...
-
                               InfoDialogService.showInfoDialogImg(
                                   context,
                                   '¿Para qué me sirve?',
@@ -237,8 +239,8 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                     ]),
                   ),
 
-                  const SizedBox(
-                    height: 15,
+                  SizedBox(
+                    height: heightScreen * 0.015,
                   ),
 
                   Row(
@@ -336,24 +338,19 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                       padding: const EdgeInsets.only(left: 40, right: 40),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white60, // Color de fondo del container
+                          color: Colors.white60,
                           borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(
-                                  0.2), // Color de la sombra con opacidad
+                              color: Colors.black.withOpacity(0.2),
                               spreadRadius: 3,
                               blurRadius: 10,
-                              offset: const Offset(
-                                  0, 3), // Desplazamiento de la sombra
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
-                        height: 300,
-                        //color: Colors.grey[200], // Color de fondo para el contenedor
-                        padding: const EdgeInsets.all(
-                            20.0), // Padding interno del contenedor
-
+                        height: heightScreen * 0.33,
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -411,15 +408,13 @@ class _FinishScreenPagesState extends State<FinishScreenPages> {
                                 ),
                               ],
                             ),
-
-                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
+                  SizedBox(
+                    height: heightScreen * 0.02,
                   ),
                   RichText(
                     textAlign: TextAlign.center,

@@ -5,7 +5,7 @@ import 'package:recu_drive/domain/entities/answer_page.dart';
 import 'package:recu_drive/domain/entities/content_form_page.dart';
 import 'package:recu_drive/presentation/widgets/drawer_home_widget.dart';
 import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
-import 'package:recu_drive/presentation/widgets/nav_bar_home_windget.dart';
+import 'package:recu_drive/presentation/widgets/nav_bar_home_widget.dart';
 import 'package:recu_drive/presentation/widgets/option_tile_widget.dart';
 
 class FormScreen extends StatefulWidget {
@@ -141,6 +141,8 @@ class _FormScreenState extends State<FormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double heightScreen = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 226, 226),
       appBar: AppBar(
@@ -319,8 +321,8 @@ class _FormScreenState extends State<FormScreen> {
             ),
           ),
           SizedBox(
-            height: 80,
-            child: NavBarHomeSection(
+            height: heightScreen * 0.09,
+            child: BottomSection(
               finishPage: _finishPage,
               currentPage: _currentPage,
               pageController: _pageController,

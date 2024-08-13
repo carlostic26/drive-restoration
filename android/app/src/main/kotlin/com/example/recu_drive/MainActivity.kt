@@ -1,4 +1,4 @@
-package com.example.recu_drive
+package com.recudrive.blogspot
 
 import io.flutter.embedding.android.FlutterActivity
 

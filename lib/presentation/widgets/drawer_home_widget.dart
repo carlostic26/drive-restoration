@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recu_drive/config/styles/constants/enviroment.dart';
 import 'package:recu_drive/presentation/screens/guias_screen.dart';
 import 'package:recu_drive/presentation/widgets/info_dialog_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DrawerHomeWidget extends StatelessWidget {
   BuildContext? context;
@@ -10,6 +11,9 @@ class DrawerHomeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double heightScreen = MediaQuery.of(context).size.height;
+    double widthScreen = MediaQuery.of(context).size.width;
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -24,8 +28,8 @@ class DrawerHomeWidget extends StatelessWidget {
               children: [
                 Image.asset(
                   'assets/logo.png',
-                  height: 80,
-                  width: 80,
+                  height: heightScreen * 0.08,
+                  width: widthScreen * 0.18,
                 ),
                 const SizedBox(height: 2),
                 const Text(
@@ -59,7 +63,7 @@ class DrawerHomeWidget extends StatelessWidget {
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Política de Privacidad'),
             onTap: () {
-              Navigator.pop(context);
+              _launchUrlPolicyPrivacy();
             },
           ),
           ListTile(
@@ -119,5 +123,15 @@ class DrawerHomeWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _launchUrlPolicyPrivacy() async {
+    final Uri url = Uri.parse(
+        'https://www.termsfeed.com/live/62b727af-8d46-47c4-908f-3e7a8d053d07');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'No se pudo lanzar la URL $url';
+    }
   }
 }
